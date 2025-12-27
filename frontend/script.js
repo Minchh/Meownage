@@ -35,7 +35,6 @@ async function processLine(line) {
                 }
             } catch (e) {
                 console.error('Failed to parse check response:', e);
-                // Assume not exists, proceed
             }
         }
         const params = parseParams(match[2]);
@@ -55,13 +54,11 @@ async function processLine(line) {
             cats.push(cat);
         } catch (e) {
             console.error('Failed to parse add cat response:', e);
-            // Assume success, but can't add to array without data
         }
     } else if (line.startsWith('ADD ADOPTER')) {
         const match = line.match(/ADD ADOPTER "([^"]+)" \(([^)]+)\)/);
         if (!match) throw new Error('Invalid ADD ADOPTER');
         const name = match[1];
-        // Check if adopter exists
         const checkRes = await fetch(`${API_BASE}/adopters/by-name?name=${encodeURIComponent(name)}`);
         if (checkRes.ok) {
             try {
@@ -138,6 +135,33 @@ async function runScript() {
     logsOutput.innerHTML += '<div class="log-entry">✨ Dashboard updated.</div>';
     logsOutput.scrollTop = logsOutput.scrollHeight;
 }
+const knownCatNames = ['Luna', 'Tina'];
+const knownAdopterNames = ['Minch']; 
+
+async function loadExistingData() {
+    for (const name of knownCatNames) {
+        const res = await fetch(`${API_BASE}/cats/by-name?name=${encodeURIComponent(name)}`);
+        if (res.ok) {
+            try {
+                const cat = await res.json();
+                if (cat && !cats.find(c => c.name === name)) cats.push(cat);
+            } catch (e) {
+                console.error('Failed to parse cat:', e);
+            }
+        }
+    }
+    for (const name of knownAdopterNames) {
+        const res = await fetch(`${API_BASE}/adopters/by-name?name=${encodeURIComponent(name)}`);
+        if (res.ok) {
+            try {
+                const adopter = await res.json();
+                if (adopter && !adopters.find(a => a.name === name)) adopters.push(adopter);
+            } catch (e) {
+                console.error('Failed to parse adopter:', e);
+            }
+        }
+    }
+}
 
 function renderDashboard() {
     const total = cats.length;
@@ -152,10 +176,11 @@ function renderDashboard() {
     cats.filter(c => !c.adopted).forEach(cat => {
         const card = document.createElement('div');
         card.className = 'cat-polaroid';
+        const catGender = cat.gender == "male" ? "Male" : "Female";
         card.innerHTML = `
             <div class="cat-img-placeholder"><img src="${cat.image_url}"></div>
             <div class="cat-name">${cat.name}</div>
-            <div class="cat-details">Age ${new Date().getFullYear() - cat.year}, ${cat.gender}, ${cat.breed}</div>
+            <div class="cat-details">Age ${new Date().getFullYear() - cat.year}, ${catGender}, ${cat.breed}</div>
             ${cat.vaccinated ? '<div class="sticker-badge">💉 Vax</div>' : ''}
         `;
         availableGrid.appendChild(card);
@@ -167,11 +192,12 @@ function renderDashboard() {
         const card = document.createElement('div');
         card.className = 'cat-polaroid';
         card.style.backgroundColor = '#F1F8E9';
+        const catGender = cat.gender == "male" ? "Male" : "Female";
         card.innerHTML = `
             ${cat.vaccinated ? '<div class="sticker-badge">💉 Vax</div>' : ''}
             <div class="cat-img-placeholder"><img src="${cat.image_url}"></div>
             <div class="cat-name">${cat.name}</div>
-            <div class="cat-details">Age ${new Date().getFullYear() - cat.year}, ${cat.gender}, ${cat.breed}</div>
+            <div class="cat-details">Age ${new Date().getFullYear() - cat.year}, ${catGender}, ${cat.breed}</div>
             <div class="cat-details" style="color: var(--pastel-pink-dark); font-weight:bold; margin-top:5px;">Adopter: ${adopter ? adopter.name : 'Unknown'}</div>
         `;
         adoptedGrid.appendChild(card);
@@ -188,7 +214,12 @@ runBtn.addEventListener('click', async () => {
         try {
             const { accepted, errors } = await checkRes.json();
             if (!accepted) {
-                alert('Script rejected:\n' + errors.join('\n'));
+                // Replace alert with logs
+                logsOutput.innerHTML += '<div class="log-entry" style="font-weight:bold; margin-top:10px;">--- Script Rejected ---</div>';
+                errors.forEach(err => {
+                    logsOutput.innerHTML += `<div class="log-entry log-error">${err}</div>`;
+                });
+                logsOutput.scrollTop = logsOutput.scrollHeight;
                 runBtn.innerHTML = '<span>🐾</span> Run My Script!';
                 runBtn.style.transform = 'scale(1)';
                 return;
@@ -199,10 +230,16 @@ runBtn.addEventListener('click', async () => {
         }
         await runScript(script);
     } catch (e) {
-        alert(e.message);
+        logsOutput.innerHTML += `<div class="log-entry log-error">${e.message}</div>`;
+        logsOutput.scrollTop = logsOutput.scrollHeight;
     }
     runBtn.innerHTML = '<span>🐾</span> Run My Script!';
     runBtn.style.transform = 'scale(1)';
     document.querySelector('.right-panel').style.transform = "scale(1.01)";
     setTimeout(() => document.querySelector('.right-panel').style.transform = "scale(1)", 200);
 });
+
+(async () => {
+    await loadExistingData();
+    renderDashboard();
+})();
