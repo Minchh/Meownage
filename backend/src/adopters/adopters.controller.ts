@@ -1,23 +1,23 @@
 import { Body, Controller, Get, Param, Post, Put, Query, UsePipes, ValidationPipe } from '@nestjs/common'
-import { AdaptersService } from './adapters.service';
-import { CreateAdapterDto } from './dto/CreateAdapter.dto';
-import { UpdateAdapterDto } from './dto/UpdateAdapter.dto';
+import { AdoptersService } from './adopters.service';
+import { CreateAdopterDto } from './dto/CreateAdopter.dto';
+import { UpdateAdopterDto } from './dto/UpdateAdopter.dto';
 
-@Controller('adapters')
-export class AdaptersController {
+@Controller('adopters')
+export class AdoptersController {
 
-	constructor(private adaptersService: AdaptersService) {}
+	constructor(private adaptersService: AdoptersService) {}
 
 	@Post()
 	@UsePipes(new ValidationPipe())
-	createAdapter(@Body() createAdapterDto: CreateAdapterDto) {
+	createAdapter(@Body() createAdapterDto: CreateAdopterDto) {
 		console.log(createAdapterDto)
 		return this.adaptersService.createAdapter(createAdapterDto);
 	}
 
 	@Put(":name")
 	@UsePipes(new ValidationPipe())
-	updateAdapter(@Param("name") name: string, @Body() updateAdapterDto: UpdateAdapterDto) {
+	updateAdapter(@Param("name") name: string, @Body() updateAdapterDto: UpdateAdopterDto) {
 		return this.adaptersService.updateAdapterByName(name, updateAdapterDto);
 	}
 

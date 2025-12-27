@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config'
-import { AdaptersModule } from './adapters/adapters.module';
+import { AdaptersModule } from './adopters/adopters.module';
 import { CatsModule } from './cats/cats.module';
 import { AdoptionsModule } from './adoptions/adoptions.module';
 

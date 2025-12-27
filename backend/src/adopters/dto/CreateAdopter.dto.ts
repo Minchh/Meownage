@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsNumber, IsPhoneNumber, IsString } from 'class-validator'
 
-export class CreateAdapterDto {
+export class CreateAdopterDto {
 
 	@IsNotEmpty()
 	@IsString()
