@@ -23,15 +23,14 @@ async function processLine(line) {
     if (line.startsWith('ADD CAT')) {
         const match = line.match(/ADD CAT "([^"]+)" \(([^)]+)\)/);
         if (!match) throw new Error('Invalid ADD CAT');
-        const name = match[1];
-        // Check if cat exists
+                const name = match[1];
         const checkRes = await fetch(`${API_BASE}/cats/by-name?name=${encodeURIComponent(name)}`);
         if (checkRes.ok) {
             try {
                 const existing = await checkRes.json();
                 if (existing) {
                     console.log(`Cat "${name}" already exists, skipping.`);
-                    return; // Skip adding
+                    return; 
                 }
             } catch (e) {
                 console.error('Failed to parse check response:', e);
@@ -55,6 +54,7 @@ async function processLine(line) {
         } catch (e) {
             console.error('Failed to parse add cat response:', e);
         }
+    
     } else if (line.startsWith('ADD ADOPTER')) {
         const match = line.match(/ADD ADOPTER "([^"]+)" \(([^)]+)\)/);
         if (!match) throw new Error('Invalid ADD ADOPTER');
@@ -83,6 +83,7 @@ async function processLine(line) {
             console.error('Failed to parse add adopter response:', e);
             // Assume success
         }
+   
     } else if (line.startsWith('VACCINATE')) {
         const name = line.match(/VACCINATE "([^"]+)"/)[1];
         const cat = cats.find(c => c.name === name);
@@ -90,6 +91,7 @@ async function processLine(line) {
         const res = await fetch(`${API_BASE}/cats/${name}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ vaccinated: true }) });
         if (!res.ok) throw new Error('Vaccinate failed');
         cat.vaccinated = true;
+    
     } else if (line.startsWith('ADOPT')) {
         const match = line.match(/ADOPT "([^"]+)" BY "([^"]+)"/);
         const catName = match[1], adopterName = match[2];
@@ -101,6 +103,7 @@ async function processLine(line) {
         if (!res.ok) throw new Error('Adopt failed');
         cat.adopted = true;
         cat.adopter_id = adopter._id;
+    
     } else if (line.startsWith('UPDATE CAT')) {
         const match = line.match(/UPDATE CAT "([^"]+)" \(([^)]+)\)/);
         const name = match[1];
@@ -110,6 +113,7 @@ async function processLine(line) {
         if (!res.ok) throw new Error('Update cat failed');
         const cat = cats.find(c => c.name === name);
         if (cat) Object.assign(cat, update);
+    
     } else if (line.startsWith('UPDATE ADOPTER')) {
         const match = line.match(/UPDATE ADOPTER "([^"]+)" \(([^)]+)\)/);
         const name = match[1];
@@ -119,6 +123,7 @@ async function processLine(line) {
         if (!res.ok) throw new Error('Update adopter failed');
         const adopter = adopters.find(a => a.name === name);
         if (adopter) Object.assign(adopter, update);
+    
     } else {
         throw new Error('Unknown command');
     }
@@ -135,6 +140,7 @@ async function runScript() {
     logsOutput.innerHTML += '<div class="log-entry">✨ Dashboard updated.</div>';
     logsOutput.scrollTop = logsOutput.scrollHeight;
 }
+
 const knownCatNames = ['Luna', 'Tina'];
 const knownAdopterNames = ['Minch']; 
 
@@ -208,6 +214,7 @@ runBtn.addEventListener('click', async () => {
     const script = document.getElementById('shelter-code').value;
     runBtn.innerHTML = '<span>🍥</span> Running...';
     runBtn.style.transform = 'scale(0.95)';
+
     try {
         const checkRes = await fetch(`${DSL_BASE}/check`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ script }) });
         if (!checkRes.ok) throw new Error('Check failed');
@@ -233,6 +240,7 @@ runBtn.addEventListener('click', async () => {
         logsOutput.innerHTML += `<div class="log-entry log-error">${e.message}</div>`;
         logsOutput.scrollTop = logsOutput.scrollHeight;
     }
+    
     runBtn.innerHTML = '<span>🐾</span> Run My Script!';
     runBtn.style.transform = 'scale(1)';
     document.querySelector('.right-panel').style.transform = "scale(1.01)";
