@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="vn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meownage</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@600;800&family=Fira+Code&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="main-wrapper">
+        <div class="header-banner">
+            Meownage
+        </div>
+
+        <div class="content-body">
+
+            <div class="left-panel">
+                <div class="editor-box">
+                    <div class="panel-title">Script Editor</div>
+                    <textarea class="code-editor" id="shelter-code" spellcheck="false">
+// Add new cat
+ADD CAT "Luna" (year: 2024, gender: "female", breed: "Tabby", vaccinated: false);
+
+// Add new adopter
+ADD ADOPTER "Minch" (year: 2003, phone: "0123456789", address: "123 Cat Street, HCMC");
+
+// Vaccinate cat
+VACCINATE "Tina";
+
+// Adopt available cat
+ADOPT "Tina" BY "Minch";
+
+// Update information
+UPDATE CAT "Tina" (year: 2023);
+UPDATE ADOPTER "Minch" (phone: "0987654321");
+                    </textarea>
+                </div>
+
+                <button class="run-btn" id="run-button">
+                    Run Script
+                </button>
+
+                <div class="logs-box" id="logs-output">
+                    <div class="log-entry">✨ System ready for cuteness...</div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="reports-bar">
+                    <div class="stat-tag">Total: <span class="count">2</span></div>
+                    <div class="stat-tag" style="background-color: var(--pastel-pink); border-color: var(--pastel-pink-dark); color: white;"> Available: <span class="count">1</span></div>
+                    <div class="stat-tag" style="background-color: var(--pastel-mint); border-color: #A7F3D0; color: #2E7D32;">Adopted: <span class="count">1</span></div>
+                </div>
+
+                <div class="dashboard-container">
+
+                    <div>
+                        <div class="section-ribbon">Available for Adoption</div>
+                        <div class="card-grid" id="available-grid">
+                             <div class="cat-polaroid">
+                                <div class="cat-img-placeholder"><img src="/image/Luna.png"></div>
+                                <div class="cat-name">Luna</div>
+                                <div class="cat-details">Age 1, Male, Tabby</div>
+                                </div>
+                        </div>
+                    </div>
+
+                     <div>
+                        <div class="section-ribbon ribbon-green">Happily Homed</div>
+                         <div class="card-grid" id="adopted-grid">
+                            <div class="cat-polaroid" style="background-color: #F1F8E9;">
+                                <div class="sticker-badge">💉 Vax</div>
+                                <div class="cat-img-placeholder" style="font-size: 2.5rem;"><img src="/image/Tina.png"></div>
+                                <div class="cat-name">Tina</div>
+                                <div class="cat-details">Age 2, Female, Tricolor</div>
+                                <div class="cat-details" style="color: var(--pastel-pink-dark); font-weight:bold; margin-top:5px;">Adopter: Minch</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
