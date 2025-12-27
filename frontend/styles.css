@@ -162,11 +162,11 @@ textarea.code-editor:focus { border-color: var(--pastel-pink); }
     position: relative;
 }
 .logs-box::before {
-     content: '📜 System Logs:';
+     content: 'System Logs:';
      font-weight: bold; display: block; margin-bottom: 5px; color: var(--text-choco);
 }
 .log-entry { margin-bottom: 4px; padding-left: 10px; border-left: 3px solid #eee;}
-.log-success { border-left-color: var(--pastel-mint); color: #2E7D32; }
+.log-success { padding-left: 10px; border-left: 3px solid #eee; border-left-color: var(--pastel-mint); color: #2E7D32; }
 .log-error { border-left-color: #FF8A80; color: #C62828; }
 
 .right-panel {
@@ -196,7 +196,7 @@ textarea.code-editor:focus { border-color: var(--pastel-pink); }
     padding: 5px 15px; border-radius: 20px;
     border: 2px solid #FFE082;
 }
-.stat-tag .count { color: #E91E63; font-family: 'Fredoka One'; font-size: 1.1rem; }
+.stat-tag .count { color: inherit; font-family: 'Fredoka One'; font-size: 1rem; }
 
 .dashboard-container {
     flex-grow: 1;

@@ -65,11 +65,10 @@ async function processLine(line) {
                 const existing = await checkRes.json();
                 if (existing) {
                     console.log(`Adopter "${name}" already exists, skipping.`);
-                    return; // Skip adding
+                    return; 
                 }
             } catch (e) {
                 console.error('Failed to parse check response:', e);
-                // Assume not exists, proceed
             }
         }
         const params = parseParams(match[2]);
@@ -81,7 +80,6 @@ async function processLine(line) {
             adopters.push(adopter);
         } catch (e) {
             console.error('Failed to parse add adopter response:', e);
-            // Assume success
         }
    
     } else if (line.startsWith('VACCINATE')) {
@@ -132,17 +130,16 @@ async function processLine(line) {
 async function runScript() {
     const script = document.getElementById('shelter-code').value;
     const lines = script.split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('//'));
-    logsOutput.innerHTML += '<div class="log-entry" style="font-weight:bold; margin-top:10px;">--- Executing Script ---</div>';
+    // logsOutput.innerHTML += '<div class="log-entry" style="font-weight:bold; margin-top:10px;">--- Executing Script ---</div>';
     for (const line of lines) {
         await processLine(line);
     }
     renderDashboard();
-    logsOutput.innerHTML += '<div class="log-entry">✨ Dashboard updated.</div>';
+    logsOutput.innerHTML += '<div class="log-success">Dashboard updated.</div>';
     logsOutput.scrollTop = logsOutput.scrollHeight;
 }
 
-const knownCatNames = ['Luna', 'Tina'];
-const knownAdopterNames = ['Minch']; 
+const knownCatNames = ['Ginger', 'Tiny'];
 
 async function loadExistingData() {
     for (const name of knownCatNames) {
@@ -153,17 +150,6 @@ async function loadExistingData() {
                 if (cat && !cats.find(c => c.name === name)) cats.push(cat);
             } catch (e) {
                 console.error('Failed to parse cat:', e);
-            }
-        }
-    }
-    for (const name of knownAdopterNames) {
-        const res = await fetch(`${API_BASE}/adopters/by-name?name=${encodeURIComponent(name)}`);
-        if (res.ok) {
-            try {
-                const adopter = await res.json();
-                if (adopter && !adopters.find(a => a.name === name)) adopters.push(adopter);
-            } catch (e) {
-                console.error('Failed to parse adopter:', e);
             }
         }
     }
@@ -186,7 +172,7 @@ function renderDashboard() {
         card.innerHTML = `
             <div class="cat-img-placeholder"><img src="${cat.image_url}"></div>
             <div class="cat-name">${cat.name}</div>
-            <div class="cat-details">Age ${new Date().getFullYear() - cat.year}, ${catGender}, ${cat.breed}</div>
+            <div class="cat-details">${new Date().getFullYear() - cat.year} YO, ${catGender}, ${cat.breed}</div>
             ${cat.vaccinated ? '<div class="sticker-badge">💉 Vax</div>' : ''}
         `;
         availableGrid.appendChild(card);
@@ -203,7 +189,7 @@ function renderDashboard() {
             ${cat.vaccinated ? '<div class="sticker-badge">💉 Vax</div>' : ''}
             <div class="cat-img-placeholder"><img src="${cat.image_url}"></div>
             <div class="cat-name">${cat.name}</div>
-            <div class="cat-details">Age ${new Date().getFullYear() - cat.year}, ${catGender}, ${cat.breed}</div>
+            <div class="cat-details">${new Date().getFullYear() - cat.year} YO, ${catGender}, ${cat.breed}</div>
             <div class="cat-details" style="color: var(--pastel-pink-dark); font-weight:bold; margin-top:5px;">Adopter: ${adopter ? adopter.name : 'Unknown'}</div>
         `;
         adoptedGrid.appendChild(card);
@@ -221,13 +207,11 @@ runBtn.addEventListener('click', async () => {
         try {
             const { accepted, errors } = await checkRes.json();
             if (!accepted) {
-                // Replace alert with logs
-                logsOutput.innerHTML += '<div class="log-entry" style="font-weight:bold; margin-top:10px;">--- Script Rejected ---</div>';
                 errors.forEach(err => {
                     logsOutput.innerHTML += `<div class="log-entry log-error">${err}</div>`;
                 });
                 logsOutput.scrollTop = logsOutput.scrollHeight;
-                runBtn.innerHTML = '<span>🐾</span> Run My Script!';
+                runBtn.innerHTML = 'Run Script';
                 runBtn.style.transform = 'scale(1)';
                 return;
             }
@@ -240,8 +224,8 @@ runBtn.addEventListener('click', async () => {
         logsOutput.innerHTML += `<div class="log-entry log-error">${e.message}</div>`;
         logsOutput.scrollTop = logsOutput.scrollHeight;
     }
-    
-    runBtn.innerHTML = '<span>🐾</span> Run My Script!';
+
+    runBtn.innerHTML = 'Run Script';
     runBtn.style.transform = 'scale(1)';
     document.querySelector('.right-panel').style.transform = "scale(1.01)";
     setTimeout(() => document.querySelector('.right-panel').style.transform = "scale(1)", 200);
